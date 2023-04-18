@@ -132,6 +132,8 @@ class Antenna(object):
             plt.ylabel(r"Phi $\phi$ [deg $\degree$]")
             plt.grid(True)
             plt.colorbar(shrink = 1.0)
+            plt.draw()
+            plt.pause(0.01)  
         return pattern
     
     
@@ -174,9 +176,13 @@ class Antenna(object):
             plt.figure("Gain vs Range")
             plt.plot(target_range, gain)
             plt.xlim(target_range[nAngles - 1], target_range[0])
+            plt.ylim(-30, 30)
             plt.xlabel("Range [m]")
             plt.ylabel("Gain [dB]")
             plt.grid(True)
+            # plt.show(block = False)
+            plt.draw()
+            plt.pause(0.01)  
         return gain
     
     
