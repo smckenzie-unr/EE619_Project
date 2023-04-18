@@ -21,12 +21,12 @@ PLAY_RUN = True
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
-VERSION_PATCH = 0      
+VERSION_PATCH = 1      
 
 if(__name__ == "__main__"):
     plt.close("all")
     print("Scott L. McKenzie EE619 Project.")
-    print("Radar simulation. Version {0:d}.{1:d}.{2:d}".format(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH))
+    print("LFM Radar simulation.\nVersion {0:d}.{1:d}.{2:d}".format(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH))
     
     Fc              = 10e9                                                      #Hz
     TX_pwr          = 2e3                                                       #watts
@@ -56,7 +56,8 @@ if(__name__ == "__main__"):
     target_range    = init_range - (target_veloctiy * time_vect)
     radial_range    = np.sqrt(((target_height - radar_height) ** 2) + (target_range ** 2))
     
-    dir_gain        = ant.directional_gain(radial_range, 0, target_height)
+    ant.get_pattern(image = True)
+    dir_gain        = ant.directional_gain(radial_range, 0, target_height, plot = True)
     signal_dB       = 10.0 * np.log10(duty_factor * TX_pwr * 1e3) + 2 * dir_gain + 20.0 * np.log10(c / Fc) + rcs - (30 * np.log10(4 * pi) + 40 * np.log10(radial_range) + sys_loss)
     noise_dB        = thermal_noise + 10 * np.log10(process_bw) + reciever_noise
     SNR             = signal_dB - noise_dB
@@ -70,6 +71,9 @@ if(__name__ == "__main__"):
         plt.ylabel("SNR [dB]")
         plt.title("SNR vs Range")
         plt.grid(True)
+        # plt.show(block = False)
+        plt.draw()
+        plt.pause(0.01)  
     
     time_delay      = np.linspace(np.max(radial_range) * 2 / c, np.min(radial_range) * 2 / c, len(time_vect)) - tau
     angle_target    = np.arcsin((target_height - radar_height) / radial_range)
@@ -85,6 +89,9 @@ if(__name__ == "__main__"):
         plt.ylabel("Doppler frequency [Hz]")
         plt.title("Doppler frequency vs Range")
         plt.grid(True)
+        # plt.show(block = False)
+        plt.draw()
+        plt.pause(0.01)  
     
     L               = round(Fs / PRF)
     PRI             = 1 / PRF
@@ -108,6 +115,7 @@ if(__name__ == "__main__"):
         RTI[td_idx, :, :]   = mf_output.reshape((M, len(t_pri)))
         fd                  = np.fft.fftshift(fft(RTI[td_idx, :, :].T * weights), axes=(1,))
         RDI[td_idx, :, :]   = fd.T
+        print("\rProcess progress: {0:.2f}%.".format((td_idx + 1) / len(time_vect) * 100), end = '')
     
     def update_image(td_idx):
         rti.set_data(10 * np.log10(abs(RTI[td_idx, :, :])))
@@ -119,15 +127,18 @@ if(__name__ == "__main__"):
         
         fig                 = plt.figure("Fly in")
         ax                  = fig.add_subplot(211)
-        rti                 = ax.imshow(10 * np.log10(abs(RTI[0, :, :])), vmin = 12.5, vmax = 30.0, origin = "lower", interpolation = "spline16", cmap = "jet", extent = RTE_E, aspect='auto', animated = True)
+        rti                 = ax.imshow(10 * np.log10(abs(RTI[0, :, :])), vmin = 12.5, vmax = 30.0, origin = "lower", interpolation = "none", cmap = "jet", extent = RTE_E, aspect='auto', animated = True)
+        ax.title.set_text("Range-Time Image")
         plt.xlabel("Range [m]")
         plt.ylabel("PRI [n]")
         
         ax                  = fig.add_subplot(212)
-        rdi                 = ax.imshow(10 * np.log10(abs(RDI[0, :, :])), vmin = 20.0, vmax = 50.0, origin = "lower", interpolation = "spline16", cmap = "jet", extent = RDI_E, aspect='auto', animated = True)
+        rdi                 = ax.imshow(10 * np.log10(abs(RDI[0, :, :])), vmin = 20.0, vmax = 50.0, origin = "lower", interpolation = "none", cmap = "jet", extent = RDI_E, aspect='auto', animated = True)
+        ax.title.set_text("Range-Doppler Image")
         plt.xlabel("Range [m]")
         plt.ylabel("Doppler Frequency [kHz]")
         
         ani = animation.FuncAnimation(fig, update_image, interval=0.01, frames = len(time_vect), repeat = False)
+        plt.subplots_adjust(hspace = 0.6)
         plt.show()
  
