@@ -69,8 +69,11 @@ def lfm_pulses(t, tau, PRI, beta, L, M):
     Parameters
     -------------
     t: time vector 
-    beta: frequency modulation bandwidth 
     tau: pulse width 
+    PRI: Pulse repetition interval 
+    beta: frequency modulation bandwidth 
+    L: Samples per PRI 
+    M: Samples per CPI 
     """ 
     
     tmod = t % PRI
@@ -94,7 +97,7 @@ def fft_convolve(x1, x2):
     Y = X1 * X2
     return ifft(Y)
 
-def white_noise(level_dB, n, mu=0):
+def white_noise(level_dB, n, mu = 0.0):
     """
     Returns white noise signal with spectral noise density 
     
@@ -103,12 +106,56 @@ def white_noise(level_dB, n, mu=0):
     level_dB: spectral noise density unit/SQRT(Hz) 
     n: number of points 
     mu: mean value 
-    """ 
-    sigma = 10 ** (level_dB / 10)
+    """
+    
+    sigma = 10 ** (level_dB / 20)
     noise = np.random.normal(mu, sigma, n) + 1j * np.random.normal(mu, sigma, n)
     return noise
 
+def interpolation(f_k, alpha, y_kp1, y_kn1, y_k):
+    """
+    Returns interpolated estimated index
+    
+    Parameters
+    -------------
+    f_k: Max frequency/range index 
+    alpha: scale factor 
+    y_kp1: abolute signal value at max index + 1 
+    y_kn1: abolute signal value at max index - 1 
+    y_k1: abolute signal value at max index 
+    """
+    
+    num = y_kp1 - y_kn1
+    return f_k + alpha * (num / y_k)
 
+def time_delay_vector(target_range):
+    """
+    Returns a vector of time delays based on range
+    
+    Parameters
+    -------------
+    target_range: target position vector 
+    """
+    
+    time_delay = np.zeros(len(target_range))
+    for t in range(len(target_range)):
+        time_delay[t] = target_range[t] * 2 / c
+    return time_delay
+
+def find(element, matrix):
+    """
+    Returns row and column of element in matrix
+    
+    Parameters
+    -------------
+    element: value to be searched for in matrix 
+    matrix: matrix to be searched 
+    """
+    
+    for i in range(len(matrix)):
+        for j in range(len(matrix[i])):
+            if matrix[i][j] == element:
+                return (i, j)
 
 
 
