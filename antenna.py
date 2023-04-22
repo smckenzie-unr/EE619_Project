@@ -184,34 +184,3 @@ class Antenna(object):
             plt.draw()
             plt.pause(0.01)  
         return gain
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-#%% TESTBENCH
-# if(__name__ == "__main__"):
-#     Fc = 10e9
-#     dim = 2 * c / Fc
-#     Scan_time  = 102.4E-3
-#     range_start = 4.5E3
-#     Htarget = 200 
-#     TargVel = 100 
-#     t_ax = np.arange(0,(range_start/TargVel),step = Scan_time)
-#     target_range = range_start - (TargVel*t_ax)
-#     radial_range = np.sqrt((Htarget ** 2) + (target_range ** 2))
-#     plt.close("Isometric Pattern")
-#     plt.close("Gain vs Range")
-#     ant = Antenna(Lx = dim, Ly = dim, Fc = Fc, height = 10.0)
-#     pattern = ant.get_pattern(image = True)
-#     print(ant.peak_gain())
-#     g = ant.directional_gain(radial_range, 0, Htarget, plot = True)
-    
