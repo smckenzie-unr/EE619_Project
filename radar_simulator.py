@@ -8,12 +8,12 @@ Created on Sun Apr 16 14:36:08 2023
 
 import numpy as np
 import matplotlib.pyplot as plt
-from utilities import doppler_freq, fft_convolve, interpolation, time_delay_vector, find
 from scipy.constants import pi, c
 from scipy.fft import fft
 from antenna import Antenna
 from matplotlib import animation
 from utilities import lfm_pulses, pulse, white_noise
+from utilities import doppler_freq, fft_convolve, interpolation, time_delay_vector, find
 
 PLOT_SNR = True
 PLOT_DOPPLER = True
@@ -27,14 +27,14 @@ DOPPLER_RANGE_ERROR = True
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 1
-VERSION_PATCH = 2     
+VERSION_PATCH = 3     
 
 if(__name__ == "__main__"):
     plt.close("all")
     
     #%% Header
     print("Scott L. McKenzie EE619 Project.")
-    print("LFM Radar simulation.\nVersion {0:d}.{1:d}.{2:d}".format(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH))
+    print("LFM Radar simulation.\nVersion {0:d}.{1:d}.{2:d}\n".format(VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH))
     
     #%% Radar Parameters
     Fc = 10e9                                                                   #Hz
@@ -98,6 +98,11 @@ if(__name__ == "__main__"):
     dopp_actual = []
     dopp_error = []
     
+    print("Max target radial range:{1:>10}{0:.2f} Meters".format(max(radial_range), ' '))
+    print("Max Doppler frequency:{1:>12}{0:.2f} Hz".format(max(dopp_freqs), ' '))
+    print("Minimum target elevation angle:{1:>3}{0:.1f} degrees".format(min(angle_target * 180 / pi), ' '))
+    print("Max SNR:{1:>26}{0:.2f} dB\n".format(max(SNR), ' '))
+    
     #%% Simulation Process
     for td_idx in range(len(time_vect)):
         scaler_lvl = 10 ** ((SNR[td_idx] + noise_dB) / 20)
@@ -131,7 +136,7 @@ if(__name__ == "__main__"):
         dopp_meas.append(curr_dopp)
         dopp_actual.append(dopp_freqs[td_idx])
         dopp_error.append(dopp_freqs[td_idx] - curr_dopp)
-        print("\rProcess progress: {0:.2f}%.".format((td_idx + 1) / len(time_vect) * 100), end = '')
+        print("\rSimulation Processing:{1:>12}{0:.2f}% Complete".format((td_idx + 1) / len(time_vect) * 100, ' '), end = '')
         
     #%% Plotting
     ant.get_pattern(image = ISOMETRIC_PATTERN)
