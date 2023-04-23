@@ -73,7 +73,7 @@ if(__name__ == "__main__"):
     
     time_delay = time_delay_vector(radial_range) - tau
     angle_target = np.arcsin((target_height - radar_height) / radial_range)
-    radial_vel = target_veloctiy - target_veloctiy * np.sin(angle_target)
+    radial_vel = target_veloctiy * np.cos(angle_target)
     dopp_freqs = doppler_freq(Fc, radial_vel)
     
     L = round(Fs / PRF)
@@ -155,8 +155,8 @@ if(__name__ == "__main__"):
     if(PLOT_DOPPLER):
         plt.figure("Doppler vs Range")
         plt.plot(radial_range, dopp_freqs)
-        plt.xlim(min(radial_range), max(radial_range))
-        plt.ylim(min(dopp_freqs), max(dopp_freqs))
+        plt.xlim(0, max(radial_range))
+        plt.ylim(min(dopp_freqs), max(dopp_freqs) * 1.20)
         plt.xlabel("Range [m]")
         plt.ylabel("Doppler frequency [Hz]")
         plt.title("Doppler frequency vs Range")
