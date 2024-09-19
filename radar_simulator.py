@@ -80,7 +80,7 @@ if(__name__ == "__main__"):
     PRI = 1 / PRF
     dt = 1 / Fs
     N = int(tau * Fs)
-    unamb_rng = (L / Fs) * c / 2
+    unamb_rng = PRI * c / 2
     
     time_pulse = np.linspace(0, M * PRI - dt, int((M * PRI) / dt))
     dopp_imag = np.zeros(shape = (M, L), dtype = complex)
@@ -138,6 +138,7 @@ if(__name__ == "__main__"):
         dopp_error.append(dopp_freqs[td_idx] - curr_dopp)
         print("\rSimulation Processing:{1:>12}{0:.2f}% Complete".format((td_idx + 1) / len(time_vect) * 100, ' '), end = '')
         
+    print("\n")
     #%% Plotting
     ant.get_pattern(image = ISOMETRIC_PATTERN)
     ant.directional_gain(radial_range, 0, target_height, plot = DIRECTION_GAIN_PLOT)
