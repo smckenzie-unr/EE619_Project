@@ -131,7 +131,8 @@ class Antenna(object):
             plt.xlabel(r"Theta $\theta$ [deg $\degree$]")
             plt.ylabel(r"Phi $\phi$ [deg $\degree$]")
             plt.grid(True)
-            plt.colorbar(shrink = 1.0)
+            cbar = plt.colorbar(shrink = 1.0)
+            cbar.ax.set_ylabel("[dBi]")
             plt.draw()
             plt.pause(0.01)  
         return pattern
